@@ -1,0 +1,50 @@
+int clap = 0;
+int input = A0;
+long clap_start = 0;
+long clap_end = 0;
+boolean LED = false;
+
+void setup() 
+{
+  pinMode(input,INPUT);
+  pinMode(13,OUTPUT);
+}
+
+void loop() 
+{
+  int sound_sensor = digitalRead(input);
+  if(sound_sensor == 0)   // active low 
+  {
+    if(clap == 0)
+    {
+      clap_start = clap_end = millis();   // eg: 1000 ms
+      clap++;
+    }
+    else if(clap >0 && millis()-clap_end > 100)    // eg: 1100 ms,1200 ms
+    {
+      clap_end = millis();    // eg: 1120 ms,1220ms
+      clap++;
+    }
+  }
+
+  if(millis() - clap_start >= 400)    // from the first clap, the total sequence should have lasted atleast 400 ms
+  {
+    if(clap == 2)
+    {
+      if(!LED)    // if LED is off, switch it on
+      {
+        LED = true;
+        digitalWrite(13,HIGH);
+      }
+    }
+    if(clap==3)
+    {
+      if(LED)    // if LED is on, switch it off
+      {
+        LED = false;
+        digitalWrite(13,LOW);
+      }
+    }
+    clap=0;
+  }
+}
